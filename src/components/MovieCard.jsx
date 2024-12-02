@@ -65,7 +65,7 @@ const MovieCard = ({ movie }) => {
             </span>
           )}
           <span className="text-lg font-bold text-yellow-500">
-            ⭐ {movie.vote_average}
+            ⭐ {movie.vote_average.toString().slice(0,3)}
           </span>
           <span className="text-sm text-gray-500">
             {movie.release_date.split("-")[0]}
