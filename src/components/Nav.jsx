@@ -1,52 +1,64 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import { useFavorite } from "../context/favoriteContext";
+import { FaBars } from "react-icons/fa";
 
 const Nav = () => {
   const { favorites } = useFavorite();
   const [show, setShow] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const NavLinkClass = ({ isActive }) => {
+    const baseClasses =
+      "md:bg-gray-500 md:rounded-md md:px-3 md:py-2 md:hover:bg-opacity-50 md:w-32 md:text-center hover:text-yellow-400 md:hover:text-neutral-50";
+    const activeClasses = "md:bg-opacity-50";
+
+    return `${baseClasses} ${isActive ? activeClasses : ""}`;
+  };
+
+  const NavContainerClass = () => {
+    const baseClasses = "md:flex md:space-x-4";
+    const hideClasses = "hidden";
+    const showClasses =
+      "absolute flex md:flex-row left-0 right-0 top-16 bg-zinc-900 z-50 flex-col space-y-4 md:space-y-0 py-4 text-center";
+
+    return `${baseClasses} ${
+      !show || !(windowWidth < 768) ? hideClasses : showClasses
+    }`;
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <nav className="bg-zinc-800 shadow">
       <div className="container mx-auto w-full max-w-5xl px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold hover:text-blue-100">
-          Top IMDb Movies Explorer
-        </Link>
-        <div
-          className={`${
-            !show
-              ? "hidden"
-              : "absolute flex md:flex-row left-0 right-0 top-16 bg-zinc-900 z-50 flex-col space-y-4 md:space-y-0 md:space-x-6 py-4 text-center"
-          } md:flex space-x-6`}
-        >
-          <Link to="/" className="hover:text-blue-100">
+        <NavLink to="/" className="text-2xl font-bold hover:text-yellow-400">
+          Movies Explorer
+        </NavLink>
+        <div className={NavContainerClass()}>
+          <NavLink to="/" className={NavLinkClass}>
             Home
-          </Link>
-          <Link to="/search" className="hover:text-blue-100">
+          </NavLink>
+          <NavLink to="/search" className={NavLinkClass}>
             Search
-          </Link>
-          <Link to="/favorites" className="hover:text-blue-100">
+          </NavLink>
+          <NavLink to="/favorites" className={NavLinkClass}>
             Favorites ({favorites.length})
-          </Link>
+          </NavLink>
         </div>
         <button
-          className="md:hidden text-white hover:text-blue-100"
-          onClick={() => setShow(!show)}
+          className="md:hidden text-white hover:text-yellow-400"
+          onClick={() => setShow((prevShow) => !prevShow)}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
+          <FaBars size={24} />
         </button>
       </div>
     </nav>

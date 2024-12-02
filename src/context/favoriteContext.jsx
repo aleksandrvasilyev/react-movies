@@ -6,7 +6,6 @@ export const FavoriteProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const toggleFavorite = (e, movie) => {
     e.preventDefault();
-
     if (favorites.some((element) => element.id === movie.id)) {
       setFavorites(favorites.filter((favorite) => favorite.id !== movie.id));
     } else {
@@ -15,7 +14,7 @@ export const FavoriteProvider = ({ children }) => {
   };
 
   const isFavorite = (id) => {
-    return favorites.some((movie) => movie.id === id);
+    return favorites.some((movie) => movie.id === Number(id));
   };
 
   return (

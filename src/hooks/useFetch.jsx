@@ -1,36 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 
-const useFetch = (initialUrl) => {
+const defaultOptions = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+  },
+};
+
+const useFetch = (options = defaultOptions) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchData = async (url) => {
-    try {
-      setData([]);
-      setLoading(true);
-      setError(null);
+  const fetchData = useCallback(
+    async (url) => {
+      try {
+        setData([]);
+        setLoading(true);
+        setError(null);
 
-      const response = await fetch(url);
+        const data = await Promise.all(
+          url.map(async (urlItem) => {
+            const response = await fetch(urlItem, options);
 
-      if (!response.ok) {
-        throw new Error("Error while fetching data.");
+            if (!response.ok) {
+              throw new Error("Error while fetching data.");
+            }
+
+            return response.json();
+          })
+        );
+
+        setData(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
+    },
+    [options]
+  );
 
-      const data = await response.json();
-      setData(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData(initialUrl);
-  }, [initialUrl]);
-
-  return { data, error, loading };
+  return { data, error, loading, fetchData };
 };
 
 export default useFetch;
