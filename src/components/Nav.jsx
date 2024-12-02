@@ -39,7 +39,7 @@ const Nav = () => {
 
   return (
     <nav className="bg-zinc-800 shadow">
-      <div className="container mx-auto w-full max-w-5xl px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto w-full max-w-6xl px-4 py-4 flex justify-between items-center">
         <NavLink to="/" className="text-2xl font-bold hover:text-yellow-400">
           Movies Explorer
         </NavLink>

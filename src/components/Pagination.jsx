@@ -34,7 +34,7 @@ const Pagination = ({ currentPage, totalPages }) => {
             {currentPage + 2}
           </PaginationButton>
         )}
-        {currentPage !== totalPages && (
+        {currentPage !== totalPages && totalPages > 0 && (
           <>
             <PaginationButton page={currentPage + 1}>
               Next &gt;

@@ -3,6 +3,9 @@ import useFetch from "../hooks/useFetch";
 import MovieList from "../components/MovieList";
 import { useParams } from "react-router-dom";
 import { genres } from "../data/genres.json";
+import RangeSlider from "react-range-slider-input";
+import "react-range-slider-input/dist/style.css";
+import useDebounce from "../hooks/useDebounce";
 
 const HomePage = () => {
   const { data, error, loading, fetchData } = useFetch();
@@ -10,10 +13,14 @@ const HomePage = () => {
   const [totalPages, setTotalPages] = useState(null);
   const [totalMovies, setTotalMovies] = useState(0);
   const [chosenGenre, setChosenGenre] = useState([]);
-
+  const [filterYear, setFilterYear] = useState();
+  const [chosenYear, setChosenYear] = useState();
+  const [ratingCountRange, setRatingCountRange] = useState([5000, 36600]);
   const [sort, setSort] = useState(0);
   const { page } = useParams();
   const currentPage = page || 1;
+
+  const debouncedRatingCountRange = useDebounce(ratingCountRange, 300);
 
   const sortValues = [
     {
@@ -66,7 +73,7 @@ const HomePage = () => {
     endIndex,
   } = useMemo(
     () => getMoviesLinks(currentPage),
-    [currentPage, sort, chosenGenre]
+    [currentPage, sort, chosenGenre, chosenYear, debouncedRatingCountRange]
   );
 
   useEffect(() => {
@@ -98,6 +105,10 @@ const HomePage = () => {
     return result;
   }
 
+  const handleRangeSlider = (e) => {
+    setRatingCountRange(e);
+  };
+  
   function getMoviesLinks(page, countOnPage = moviesOnPage) {
     const moviesFromApi = 20;
 
@@ -115,7 +126,11 @@ const HomePage = () => {
       linksArray.push(
         `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${index}&sort_by=${
           sortValues.find((val) => val.id === Number(sort)).value
-        }&vote_count.gte=5000&with_genres=${chosenGenre.join(",")}`
+        }&vote_count.gte=${ratingCountRange[0]}&vote_count.lte=${
+          ratingCountRange[1]
+        }&with_genres=${chosenGenre.join(
+          ","
+        )}&primary_release_year=${chosenYear}`
       );
     }
     return {
@@ -124,10 +139,6 @@ const HomePage = () => {
       endIndex: endIndexInChunk,
     };
   }
-
-  const handleSort = (e) => {
-    setSort(e.target.value);
-  };
 
   const handleSetGenre = (e) => {
     const id = e.target.value;
@@ -138,16 +149,17 @@ const HomePage = () => {
     }
   };
 
+  console.log(ratingCountRange);
   return (
     <>
-      <main className="flex container gap-10 mx-auto px-4 py-10 w-full max-w-6xl md:flex-row flex-col">
+      <main className="flex container gap-10 mx-auto px-4 py-10 w-full max-w-6xl md:flex-row flex-col-reverse">
         <section className="w-full max-w-52 text-xl font-bold">
-          <div className="my-4">Sort</div>
+          <div className="my-4 text-center">Sort</div>
           <div>
             <select
               id="default"
               className="bg-gray-100 border border-gray-300 text-gray-900 mb-6 text-sm rounded-lg block w-full p-2.5"
-              onChange={(e) => handleSort(e)}
+              onChange={(e) => setSort(e.target.value)}
             >
               {sortValues.map((value, i) => (
                 <option key={i} value={value.id} defaultValue={value.id === 0}>
@@ -157,9 +169,9 @@ const HomePage = () => {
             </select>
           </div>
           <div>
-            <div className="my-4">Filter</div>
+            <div className="mt-4 text-center">Filter</div>
             <div className="text-base">
-              <div className="my-2">By Genre:</div>
+              <div className="mb-2 mt-6">By Genre:</div>
               <div className="max-h-72 overflow-y-scroll border rounded-md px-4 py-2">
                 {Object.entries(genres).map(([id, name], i) => (
                   <label
@@ -172,9 +184,56 @@ const HomePage = () => {
                       value={id}
                       className="cursor-pointer"
                     />{" "}
-                    {name}{" "}
+                    <span
+                      className={
+                        chosenGenre.includes(id) ? "text-yellow-400" : ""
+                      }
+                    >
+                      {name}
+                    </span>
                   </label>
                 ))}
+              </div>
+            </div>
+            <div className="text-base">
+              <div className="mb-2 mt-6">
+                <label htmlFor="year">By Year:</label>
+              </div>
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  className="bg-gray-300 text-black w-32 px-3 rounded-md text-sm"
+                  id="year"
+                  onChange={(e) => setFilterYear(e.target.value)}
+                />
+                <button
+                  className="bg-gray-500 rounded-md px-3 py-2 hover:bg-opacity-50 text-center hover:text-neutral-50 "
+                  onClick={() => setChosenYear(filterYear)}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+
+            <div className="text-base">
+              <div className="mb-2 mt-6">
+                <label htmlFor="votes_count">By Votes Count:</label>
+              </div>
+              <div className="my-6">
+                <RangeSlider
+                  min={0}
+                  max={36600}
+                  defaultValue={ratingCountRange}
+                  onInput={(e) => handleRangeSlider(e)}
+                />
+                <div className="flex justify-between mt-4">
+                  <span className="text-left text-sm">
+                    {ratingCountRange[0]}
+                  </span>
+                  <span className="text-right text-sm">
+                    {ratingCountRange[1]}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -182,12 +241,30 @@ const HomePage = () => {
         <section className="w-full">
           <div className="flex justify-between items-center w-full text-xl font-bold my-4">
             <div className="text-left">
-              Movies sorted by{" "}
-              {sortValues.find((val) => val.id === Number(sort)).name}{" "}
-              <div className="text-sm">results: {totalMovies}</div>
+              Movies
+              <span className="block text-sm text-gray-400">
+                votes count from {ratingCountRange[0]} to {ratingCountRange[1]}
+              </span>
+              <span className="block text-sm text-gray-400">
+                {chosenGenre.length > 0 &&
+                  `genre: ${chosenGenre
+                    .map((id) => genres[id])
+                    .join(", ")}`}{" "}
+              </span>
+              <span className="block text-sm text-gray-400">
+                sorted by{" "}
+                {sortValues.find((val) => val.id === Number(sort)).name}{" "}
+              </span>
+              <span className="block text-sm text-gray-400">
+                results: {totalMovies}
+              </span>
             </div>
             <div className="text-right">
-              Page {currentPage} of {totalPages}
+              {totalMovies > 0 && (
+                <>
+                  Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
+                </>
+              )}
             </div>
           </div>
           <MovieList
@@ -196,7 +273,7 @@ const HomePage = () => {
             currentPage={Number(currentPage)}
             totalPages={Number(totalPages)}
             moviesOnPage={Number(moviesOnPage)}
-            total={totalPages}
+            totalMovies={Number(totalMovies)}
             error={error}
             loading={loading}
           />
