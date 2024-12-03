@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import heartRegular from "../assets/heartRegular.svg";
@@ -8,17 +8,24 @@ import { useHistory } from "../context/historyContext";
 import moviePoster from "../assets/movie.jpg";
 
 const MoviePage = () => {
+  const [movieData, setMovieData] = useState([]);
   const { id } = useParams();
   const { isFavorite, toggleFavorite } = useFavorite();
   const { addHistory } = useHistory();
-  const { data: movieData, error, loading, fetchData } = useFetch();
+  const { error, loading, fetchData } = useFetch();
 
   const movie = movieData[0];
 
   useEffect(() => {
-    fetchData([
-      `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits&language=en-US`,
-    ]);
+    const fetchMovie = async () => {
+      const movieData = await fetchData([
+        `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits&language=en-US`,
+      ]);
+
+      setMovieData(movieData);
+    };
+
+    fetchMovie();
   }, [fetchData, id]);
 
   useEffect(() => {

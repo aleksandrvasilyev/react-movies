@@ -4,18 +4,24 @@ import MovieList from "../components/MovieList";
 
 const SearchPage = () => {
   const [query, setQuery] = useState("");
+  const [data, setData] = useState([]);
 
   const handleInput = (e) => {
     setQuery(e.target.value);
   };
 
-  const { data, error, loading, fetchData } = useFetch();
+  const { error, loading, fetchData } = useFetch();
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchData([
-      `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`,
-    ]);
+    const fetchMovie = async () => {
+      const data = await fetchData([
+        `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`,
+      ]);
+
+      setData(data);
+    };
+    fetchMovie();
   };
 
   return (

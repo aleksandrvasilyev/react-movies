@@ -51,7 +51,13 @@ const Sidebar = ({ sortOptions }) => {
                 className="block mb-1 hover:text-yellow-400 cursor-pointer"
                 onChange={(e) => handleGenreChange(e)}
               >
-                <input type="checkbox" value={id} className="cursor-pointer" />{" "}
+                <input
+                  type="checkbox"
+                  value={id}
+                  className="cursor-pointer"
+                  checked={selectedGenres.includes(id) ? "text-yellow-400" : ""}
+                  onChange={(e) => handleGenreChange(e)}
+                />{" "}
                 <span
                   className={
                     selectedGenres.includes(id) ? "text-yellow-400" : ""

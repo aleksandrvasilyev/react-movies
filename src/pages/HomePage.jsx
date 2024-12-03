@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { sorting } from "../data/sorting.json";
 import Sidebar from "../components/Sidebar";
 import { SortAndFilterContext } from "../context/SortAndFilterContext";
+import useFetch from "../hooks/useFetch";
 
 const HomePage = () => {
   const {
@@ -13,12 +14,11 @@ const HomePage = () => {
     debouncedReleaseDateRange,
   } = useContext(SortAndFilterContext);
 
+  const { error, loading, fetchData } = useFetch();
+
   const [moviesData, setMoviesData] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalMovies, setTotalMovies] = useState(0);
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const { page } = useParams();
   const currentPage = page || 1;
@@ -61,46 +61,27 @@ const HomePage = () => {
       };
     };
 
-    const defaultOptions = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-      },
-    };
-
     const fetchMovies = async () => {
-      setLoading(true);
       const { apiUrls, startIndexInChunk } = generateApiUrls();
 
-      try {
-        const fetchPromises = apiUrls.map((url) =>
-          fetch(url, defaultOptions).then((res) => res.json())
-        );
+      const responses = await fetchData(apiUrls);
 
-        const responses = await Promise.all(fetchPromises);
-        let combinedResults = [];
+      let combinedResults = [];
 
-        responses.forEach((response) => {
-          combinedResults = combinedResults.concat(response.results);
-          if (responses.indexOf(response) === 0) {
-            setTotalPages(response.total_pages);
-            setTotalMovies(response.total_results);
-          }
-        });
+      responses.forEach((response) => {
+        combinedResults = combinedResults.concat(response.results);
+        if (responses.indexOf(response) === 0) {
+          setTotalPages(response.total_pages);
+          setTotalMovies(response.total_results);
+        }
+      });
 
-        const finalMoviesData = combinedResults.slice(
-          startIndexInChunk,
-          startIndexInChunk + moviesPerPage
-        );
+      const finalMoviesData = combinedResults.slice(
+        startIndexInChunk,
+        startIndexInChunk + moviesPerPage
+      );
 
-        setMoviesData(finalMoviesData);
-        setError(null);
-      } catch (error) {
-        setError("Error loading data: ", error);
-      } finally {
-        setLoading(false);
-      }
+      setMoviesData(finalMoviesData);
     };
 
     fetchMovies();
@@ -111,6 +92,7 @@ const HomePage = () => {
     debouncedReleaseDateRange,
     selectedGenres,
     sortOption,
+    fetchData,
   ]);
 
   return (

@@ -9,14 +9,12 @@ const defaultOptions = {
 };
 
 const useFetch = (options = defaultOptions) => {
-  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(
     async (url) => {
       try {
-        setData([]);
         setLoading(true);
         setError(null);
 
@@ -31,8 +29,7 @@ const useFetch = (options = defaultOptions) => {
             return response.json();
           })
         );
-
-        setData(data);
+        return data;
       } catch (error) {
         setError(error.message);
       } finally {
@@ -42,7 +39,7 @@ const useFetch = (options = defaultOptions) => {
     [options]
   );
 
-  return { data, error, loading, fetchData };
+  return { error, loading, fetchData };
 };
 
 export default useFetch;
