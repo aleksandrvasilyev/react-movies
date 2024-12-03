@@ -6,6 +6,7 @@ import { SortAndFilterContext } from "../context/SortAndFilterContext";
 
 const Sidebar = ({ sortOptions }) => {
   const {
+    sortOption,
     setSortOption,
     selectedGenres,
     setSelectedGenres,
@@ -32,6 +33,7 @@ const Sidebar = ({ sortOptions }) => {
           id="default"
           className="bg-gray-100 border border-gray-300 text-gray-900 mb-6 text-sm rounded-lg block w-full p-2.5"
           onChange={(e) => setSortOption(e.target.value)}
+          value={sortOption}
         >
           {sortOptions.map((value, i) => (
             <option key={i} value={value.id}>

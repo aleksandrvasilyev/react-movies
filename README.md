@@ -1,8 +1,54 @@
-# React + Vite
+# Movies Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Live Demo
 
-Currently, two official plugins are available:
+[https://react-movies-oleksandr.netlify.app](Movies Explorer on Netlify)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
+
+Movies Explorer is a web application to allows users to show lists of movies, sort and filter movies by parameters, view detailed information about the movie, add movies to favorite, open view history page and search movies by it's title.
+
+## Features
+
+- Display list of movies
+- View detailed information about a single movie
+- Add movie to favorites
+- Search movies by title
+- Sort movies by parameters (rating, year, popularity)
+- Filter movies by parameters (genre, year, votes count)
+
+## Technologies Used
+
+- React
+- React router
+- Context API
+
+## Installation
+
+To run the project locally:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/aleksandrvasilyev/react-movies.git
+   ```
+
+2. Open application folder:
+
+   ```bash
+   cd react-movies
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the server::
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open link in your browser - [http://localhost:5173/](http://localhost:5173/)
