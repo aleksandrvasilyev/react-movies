@@ -5,7 +5,7 @@ const MovieList = ({
   showPagination,
   currentPage,
   totalPages,
-  moviesOnPage,
+  moviesPerPage,
   totalMovies,
   error,
   loading,
@@ -29,7 +29,7 @@ const MovieList = ({
           <MovieCard movie={movie} key={i} />
         ))}
       </div>
-      {showPagination && totalMovies > 0 && totalMovies >= moviesOnPage && (
+      {showPagination && totalMovies > 0 && totalMovies >= moviesPerPage && (
         <Pagination currentPage={currentPage} totalPages={totalPages} />
       )}
     </>
