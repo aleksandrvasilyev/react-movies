@@ -13,14 +13,14 @@ const HomePage = () => {
   const [totalPages, setTotalPages] = useState(null);
   const [totalMovies, setTotalMovies] = useState(0);
   const [chosenGenre, setChosenGenre] = useState([]);
-  const [filterYear, setFilterYear] = useState();
-  const [chosenYear, setChosenYear] = useState();
   const [ratingCountRange, setRatingCountRange] = useState([5000, 36600]);
+  const [releaseDateRange, setReleaseDateRange] = useState([1950, 2024]);
   const [sort, setSort] = useState(0);
   const { page } = useParams();
   const currentPage = page || 1;
 
   const debouncedRatingCountRange = useDebounce(ratingCountRange, 300);
+  const debouncedReleaseDateRange = useDebounce(releaseDateRange, 300);
 
   const sortValues = [
     {
@@ -73,7 +73,13 @@ const HomePage = () => {
     endIndex,
   } = useMemo(
     () => getMoviesLinks(currentPage),
-    [currentPage, sort, chosenGenre, chosenYear, debouncedRatingCountRange]
+    [
+      currentPage,
+      sort,
+      chosenGenre,
+      debouncedRatingCountRange,
+      debouncedReleaseDateRange,
+    ]
   );
 
   useEffect(() => {
@@ -105,10 +111,10 @@ const HomePage = () => {
     return result;
   }
 
-  const handleRangeSlider = (e) => {
-    setRatingCountRange(e);
-  };
-  
+  // const handleRangeSlider = (e) => {
+  //   setRatingCountRange(e);
+  // };
+
   function getMoviesLinks(page, countOnPage = moviesOnPage) {
     const moviesFromApi = 20;
 
@@ -128,9 +134,9 @@ const HomePage = () => {
           sortValues.find((val) => val.id === Number(sort)).value
         }&vote_count.gte=${ratingCountRange[0]}&vote_count.lte=${
           ratingCountRange[1]
-        }&with_genres=${chosenGenre.join(
-          ","
-        )}&primary_release_year=${chosenYear}`
+        }&with_genres=${chosenGenre.join(",")}&primary_release_date.gte=${
+          releaseDateRange[0]
+        }-01-01&primary_release_date.lte=${releaseDateRange[1]}-01-01`
       );
     }
     return {
@@ -149,7 +155,6 @@ const HomePage = () => {
     }
   };
 
-  console.log(ratingCountRange);
   return (
     <>
       <main className="flex container gap-10 mx-auto px-4 py-10 w-full max-w-6xl md:flex-row flex-col-reverse">
@@ -197,21 +202,23 @@ const HomePage = () => {
             </div>
             <div className="text-base">
               <div className="mb-2 mt-6">
-                <label htmlFor="year">By Year:</label>
+                <label htmlFor="year">Release Date:</label>
               </div>
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  className="bg-gray-300 text-black w-32 px-3 rounded-md text-sm"
-                  id="year"
-                  onChange={(e) => setFilterYear(e.target.value)}
+              <div className="my-6">
+                <RangeSlider
+                  min={1950}
+                  max={2024}
+                  defaultValue={releaseDateRange}
+                  onInput={(e) => setReleaseDateRange(e)}
                 />
-                <button
-                  className="bg-gray-500 rounded-md px-3 py-2 hover:bg-opacity-50 text-center hover:text-neutral-50 "
-                  onClick={() => setChosenYear(filterYear)}
-                >
-                  Submit
-                </button>
+                <div className="flex justify-between mt-4">
+                  <span className="text-left text-sm">
+                    {releaseDateRange[0]}
+                  </span>
+                  <span className="text-right text-sm">
+                    {releaseDateRange[1]}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -224,7 +231,7 @@ const HomePage = () => {
                   min={0}
                   max={36600}
                   defaultValue={ratingCountRange}
-                  onInput={(e) => handleRangeSlider(e)}
+                  onInput={(e) => setRatingCountRange(e)}
                 />
                 <div className="flex justify-between mt-4">
                   <span className="text-left text-sm">
@@ -236,6 +243,29 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
+            <div className="text-base">
+              <div className="mb-2 mt-12">
+                <label htmlFor="votes_count">Applied:</label>
+              </div>
+              <div className="my-6">
+                <span className="block text-sm text-gray-400 my-4">
+                  {chosenGenre.length > 0 &&
+                    `genre: ${chosenGenre
+                      .map((id) => genres[id])
+                      .join(", ")}`}{" "}
+                </span>
+
+                <span className="block text-sm text-gray-400 my-4">
+                  release date from {releaseDateRange[0]} to{" "}
+                  {releaseDateRange[1]}
+                </span>
+
+                <span className="block text-sm text-gray-400 my-4">
+                  votes count from {ratingCountRange[0]} to{" "}
+                  {ratingCountRange[1]}
+                </span>
+              </div>
+            </div>
           </div>
         </section>
         <section className="w-full">
@@ -243,26 +273,22 @@ const HomePage = () => {
             <div className="text-left">
               Movies
               <span className="block text-sm text-gray-400">
-                votes count from {ratingCountRange[0]} to {ratingCountRange[1]}
-              </span>
-              <span className="block text-sm text-gray-400">
-                {chosenGenre.length > 0 &&
-                  `genre: ${chosenGenre
-                    .map((id) => genres[id])
-                    .join(", ")}`}{" "}
-              </span>
-              <span className="block text-sm text-gray-400">
                 sorted by{" "}
                 {sortValues.find((val) => val.id === Number(sort)).name}{" "}
               </span>
               <span className="block text-sm text-gray-400">
-                results: {totalMovies}
+                Total Movies: {totalMovies}
               </span>
             </div>
             <div className="text-right">
               {totalMovies > 0 && (
                 <>
-                  Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
+                  <div>
+                    Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    {moviesOnPage} movies on page
+                  </div>
                 </>
               )}
             </div>

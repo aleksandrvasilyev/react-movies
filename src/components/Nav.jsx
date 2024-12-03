@@ -50,6 +50,9 @@ const Nav = () => {
           <NavLink to="/search" className={NavLinkClass}>
             Search
           </NavLink>
+          <NavLink to="/history" className={NavLinkClass}>
+            History
+          </NavLink>
           <NavLink to="/favorites" className={NavLinkClass}>
             Favorites ({favorites.length})
           </NavLink>

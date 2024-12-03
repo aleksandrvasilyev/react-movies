@@ -5,3 +5,8 @@
 body {
   @apply bg-zinc-700 text-neutral-50;
 }
+
+.range-slider .range-slider__range,
+.range-slider .range-slider__thumb {
+  background: #eab308 !important;
+}

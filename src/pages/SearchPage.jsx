@@ -19,7 +19,7 @@ const SearchPage = () => {
   };
 
   return (
-    <section className="container mx-auto px-4 py-10 w-full max-w-5xl">
+    <section className="container mx-auto px-4 py-10 w-full max-w-6xl">
       <form>
         <label className="text-xl font-bold" htmlFor="search">
           Search Movies

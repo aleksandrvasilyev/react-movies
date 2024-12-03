@@ -6,9 +6,16 @@ const FavoritesPage = () => {
 
   return (
     <>
-      <section className="container mx-auto px-4 py-10 w-full max-w-5xl">
+      <section className="container mx-auto px-4 py-10 w-full max-w-6xl">
         {favorites.length > 0 ? (
-          <MovieList data={favorites} />
+          <>
+            {" "}
+            <div className="flex justify-between font-bold mb-6 text-xl">
+              <div>Favorites page</div>
+              <div>{favorites.length} movie(s)</div>
+            </div>
+            <MovieList data={favorites} />
+          </>
         ) : (
           <p>You have not chosen any favorites yet!</p>
         )}

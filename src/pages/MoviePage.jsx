@@ -4,18 +4,39 @@ import useFetch from "../hooks/useFetch";
 import heartRegular from "../assets/heartRegular.svg";
 import heartSolid from "../assets/heartSolid.svg";
 import { useFavorite } from "../context/favoriteContext";
+import { useHistory } from "../context/historyContext";
 import moviePoster from "../assets/movie.jpg";
 
 const MoviePage = () => {
   const { id } = useParams();
   const { isFavorite, toggleFavorite } = useFavorite();
+  const { addHistory } = useHistory();
   const { data: movieData, error, loading, fetchData } = useFetch();
+
+  const movie = movieData[0];
 
   useEffect(() => {
     fetchData([
       `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits&language=en-US`,
     ]);
   }, [fetchData, id]);
+
+  useEffect(() => {
+    if (movieData && movieData.length > 0) {
+      const movie = movieData[0];
+      const movieObject = {
+        id: Number(id),
+        poster_path: movie.poster_path,
+        title: movie.title,
+        genre_ids: movie.genres.map((genre) => genre.id),
+        vote_average: movie.vote_average,
+        release_date: movie.release_date,
+        overview: movie.overview,
+      };
+
+      addHistory(movieObject);
+    }
+  }, [movieData, id, addHistory]);
 
   if (loading) {
     return <div className="max-w-4xl my-8 mx-auto">Loading...</div>;
@@ -28,8 +49,6 @@ const MoviePage = () => {
   if (!movieData || movieData.length === 0) {
     return <div className="max-w-4xl my-8 mx-auto">Movie not found!</div>;
   }
-
-  const movie = movieData[0];
 
   return (
     <section className="container mx-auto max-w-5xl px-4 py-10 my-8 w-full bg-gradient-to-b from-white to-gray-100 shadow-lg rounded-lg">
