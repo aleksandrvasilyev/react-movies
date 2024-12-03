@@ -49,7 +49,7 @@ const SearchPage = () => {
               <div className="text-left">Movies</div>
               <div className="text-right">
                 Results:{" "}
-                {data[0].total_results > 20 ? 2033 : data[0].total_results}
+                {data[0].total_results > 20 ? 20 : data[0].total_results}
               </div>
             </div>
             <MovieList

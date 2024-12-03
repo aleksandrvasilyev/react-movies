@@ -2,10 +2,11 @@ import { useEffect, useState, useMemo } from "react";
 import useFetch from "../hooks/useFetch";
 import MovieList from "../components/MovieList";
 import { useParams } from "react-router-dom";
+import useDebounce from "../hooks/useDebounce";
 import { genres } from "../data/genres.json";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
-import useDebounce from "../hooks/useDebounce";
+import { sorting } from "../data/sorting.json";
 
 const HomePage = () => {
   const { data, error, loading, fetchData } = useFetch();
@@ -13,66 +14,26 @@ const HomePage = () => {
   const [totalPages, setTotalPages] = useState(null);
   const [totalMovies, setTotalMovies] = useState(0);
   const [chosenGenre, setChosenGenre] = useState([]);
+  const releaseDateInitials = [1950, 2024];
   const [ratingCountRange, setRatingCountRange] = useState([5000, 36600]);
-  const [releaseDateRange, setReleaseDateRange] = useState([1950, 2024]);
+  const [releaseDateRange, setReleaseDateRange] = useState([
+    releaseDateInitials[0],
+    releaseDateInitials[1],
+  ]);
   const [sort, setSort] = useState(0);
   const { page } = useParams();
   const currentPage = page || 1;
-
+  const showMoviesOnPage = 12;
   const debouncedRatingCountRange = useDebounce(ratingCountRange, 300);
   const debouncedReleaseDateRange = useDebounce(releaseDateRange, 300);
-
-  const sortValues = [
-    {
-      id: 0,
-      name: "Rating ↓",
-      value: "vote_average.desc",
-    },
-    {
-      id: 1,
-      name: "Rating ↑",
-      value: "vote_average.asc",
-    },
-    {
-      id: 2,
-      name: "Votes count ↓",
-      value: "vote_count.desc",
-    },
-    {
-      id: 3,
-      name: "Votes count ↑",
-      value: "vote_count.asc",
-    },
-    {
-      id: 4,
-      name: "Popularity ↓",
-      value: "popularity.desc",
-    },
-    {
-      id: 5,
-      name: "Popularity ↑",
-      value: "popularity.asc",
-    },
-    {
-      id: 6,
-      name: "Release date ↓",
-      value: "primary_release_date.desc",
-    },
-    {
-      id: 7,
-      name: "Release date ↑",
-      value: "primary_release_date.asc",
-    },
-  ];
-
-  const moviesOnPage = 12;
+  const sortValues = sorting[0];
 
   const {
     linksArray: links,
     startIndex,
     endIndex,
   } = useMemo(
-    () => getMoviesLinks(currentPage),
+    () => generateApiUrls(currentPage),
     [
       currentPage,
       sort,
@@ -91,7 +52,7 @@ const HomePage = () => {
   useEffect(() => {
     const result = getMovies(data, startIndex, endIndex);
     if (data[0]) {
-      setTotalPages(Math.floor(data[0].total_results / moviesOnPage));
+      setTotalPages(Math.floor(data[0].total_results / showMoviesOnPage));
       setTotalMovies(data[0].total_results);
     }
 
@@ -111,15 +72,11 @@ const HomePage = () => {
     return result;
   }
 
-  // const handleRangeSlider = (e) => {
-  //   setRatingCountRange(e);
-  // };
-
-  function getMoviesLinks(page, countOnPage = moviesOnPage) {
+  function generateApiUrls(page) {
     const moviesFromApi = 20;
 
-    const startIndex = (page - 1) * countOnPage;
-    const endIndex = startIndex + countOnPage;
+    const startIndex = (page - 1) * showMoviesOnPage;
+    const endIndex = startIndex + showMoviesOnPage;
     const startIndexInChunk = startIndex % moviesFromApi;
     const endIndexInChunk = endIndex % moviesFromApi;
     const countQueries = endIndexInChunk > startIndexInChunk ? 1 : 2;
@@ -158,6 +115,7 @@ const HomePage = () => {
   return (
     <>
       <main className="flex container gap-10 mx-auto px-4 py-10 w-full max-w-6xl md:flex-row flex-col-reverse">
+        {/* sidebar */}
         <section className="w-full max-w-52 text-xl font-bold">
           <div className="my-4 text-center">Sort</div>
           <div>
@@ -202,12 +160,12 @@ const HomePage = () => {
             </div>
             <div className="text-base">
               <div className="mb-2 mt-6">
-                <label htmlFor="year">Release Date:</label>
+                <span>By Release Date:</span>
               </div>
               <div className="my-6">
                 <RangeSlider
-                  min={1950}
-                  max={2024}
+                  min={releaseDateInitials[0]}
+                  max={releaseDateInitials[1]}
                   defaultValue={releaseDateRange}
                   onInput={(e) => setReleaseDateRange(e)}
                 />
@@ -224,7 +182,7 @@ const HomePage = () => {
 
             <div className="text-base">
               <div className="mb-2 mt-6">
-                <label htmlFor="votes_count">By Votes Count:</label>
+                <span>By Votes Count:</span>
               </div>
               <div className="my-6">
                 <RangeSlider
@@ -245,7 +203,7 @@ const HomePage = () => {
             </div>
             <div className="text-base">
               <div className="mb-2 mt-12">
-                <label htmlFor="votes_count">Applied:</label>
+                <span>Applied:</span>
               </div>
               <div className="my-6">
                 <span className="block text-sm text-gray-400 my-4">
@@ -287,7 +245,7 @@ const HomePage = () => {
                     Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
                   </div>
                   <div className="text-sm text-gray-400">
-                    {moviesOnPage} movies on page
+                    {showMoviesOnPage} movies on page
                   </div>
                 </>
               )}
@@ -298,7 +256,7 @@ const HomePage = () => {
             showPagination={true}
             currentPage={Number(currentPage)}
             totalPages={Number(totalPages)}
-            moviesOnPage={Number(moviesOnPage)}
+            showMoviesOnPage={Number(showMoviesOnPage)}
             totalMovies={Number(totalMovies)}
             error={error}
             loading={loading}

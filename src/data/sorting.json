@@ -1,0 +1,46 @@
+{
+  "sorting": [
+    [
+      {
+        "id": 0,
+        "name": "Rating ↓",
+        "value": "vote_average.desc"
+      },
+      {
+        "id": 1,
+        "name": "Rating ↑",
+        "value": "vote_average.asc"
+      },
+      {
+        "id": 2,
+        "name": "Votes count ↓",
+        "value": "vote_count.desc"
+      },
+      {
+        "id": 3,
+        "name": "Votes count ↑",
+        "value": "vote_count.asc"
+      },
+      {
+        "id": 4,
+        "name": "Popularity ↓",
+        "value": "popularity.desc"
+      },
+      {
+        "id": 5,
+        "name": "Popularity ↑",
+        "value": "popularity.asc"
+      },
+      {
+        "id": 6,
+        "name": "Release date ↓",
+        "value": "primary_release_date.desc"
+      },
+      {
+        "id": 7,
+        "name": "Release date ↑",
+        "value": "primary_release_date.asc"
+      }
+    ]
+  ]
+}
