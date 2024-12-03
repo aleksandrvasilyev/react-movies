@@ -2,7 +2,7 @@
 
 ## Live Demo
 
-[https://react-movies-oleksandr.netlify.app/](Movies Explorer)
+[Movies Explorer](https://react-movies-oleksandr.netlify.app/)
 
 ## Overview
 
