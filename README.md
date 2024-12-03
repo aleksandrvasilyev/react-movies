@@ -22,6 +22,7 @@ Movies Explorer is a web application to allows users to show lists of movies, so
 - React
 - React router
 - Context API
+- TMDB API
 
 ## Installation
 
@@ -45,10 +46,18 @@ To run the project locally:
    npm install
    ```
 
-4. Start the server::
+4. Copy file .env.example to .env:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Add your api key from [TMDB (The Movie Database)](https://developer.themoviedb.org/docs/getting-started)
+
+6. Start the server::
 
    ```bash
    npm run dev
    ```
 
-5. Open link in your browser - [http://localhost:5173/](http://localhost:5173/)
+7. Open link in your browser - [http://localhost:5173/](http://localhost:5173/)
