@@ -52,7 +52,11 @@ To run the project locally:
    cp .env.example .env
    ```
 
-5. Add your api key from [TMDB (The Movie Database)](https://developer.themoviedb.org/docs/getting-started)
+5. Add your api key from [TMDB (The Movie Database)](https://developer.themoviedb.org/docs/getting-started) to .env file
+
+   ```bash
+   VITE_API_TOKEN=YOUR_API_KEY
+   ```
 
 6. Start the server::
 
