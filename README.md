@@ -19,6 +19,7 @@ Movies Explorer is a web application to allows users to show lists of movies, so
 
 ## Technologies Used
 
+- Tailwind
 - React
 - React router
 - Context API
